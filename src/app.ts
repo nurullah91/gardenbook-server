@@ -29,7 +29,7 @@ app.get('/', (req: Request, res: Response) => {
         <p style="font-size: 1.2em; color: #666; margin: 20px 0;">
             We're excited to have you here. Explore our features and api's for Making your website more dynamic, real and user friendly!
         </p>
-        <a href="https://github.com/nurullah91/meeting-sport-backend" style="
+        <a href="https://github.com/nurullah91/gardenbook-server" style="
         display: inline-block; 
         padding: 15px 30px; 
         font-size: 1.2em; 
