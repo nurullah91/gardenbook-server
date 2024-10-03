@@ -11,6 +11,9 @@ const nameSchema = z.object({
 export const createUserSchema = z.object({
   name: nameSchema,
   email: z.string().email('Invalid email address'),
+  role: z.enum(['admin', 'user'], {
+    message: 'Role must be either admin or user',
+  }),
   phone: z
     .string()
     .max(15, 'Phone number cannot be more thant 15 characters long'),

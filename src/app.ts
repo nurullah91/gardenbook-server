@@ -1,13 +1,20 @@
-import express, { Application, Request, Response } from 'express';
-const app: Application = express();
+import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
+import router from './app/routes';
+import notFound from './app/middlewares/notFound';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
+
+const app: Application = express();
 
 // parser
 app.use(express.json());
 app.use(cors());
+
+// Connect the application routes
+app.use('/api/', router);
+
 app.get('/', (req: Request, res: Response) => {
-  res.send(`
-    <div style="
+  res.send(`<div style="
     margin: -8px;
     padding: 0; 
     font-family: Arial, sans-serif; 
@@ -43,6 +50,12 @@ app.get('/', (req: Request, res: Response) => {
         </a>
     </div>
     </div>`);
+});
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  globalErrorHandler(err, req, res, next);
+});
+app.use((req, res, next) => {
+  notFound(req, res, next);
 });
 
 export default app;
