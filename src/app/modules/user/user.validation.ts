@@ -8,12 +8,15 @@ const nameSchema = z.object({
 });
 
 // User validation schema
-export const createUserSchema = z.object({
+const createUserSchema = z.object({
+  password: z.string().min(6, 'At least 6 password is required'),
   name: nameSchema,
   email: z.string().email('Invalid email address'),
-  role: z.enum(['admin', 'user'], {
-    message: 'Role must be either admin or user',
-  }),
+  role: z
+    .enum(['admin', 'user'], {
+      message: 'Role must be either admin or user',
+    })
+    .optional(),
   phone: z
     .string()
     .max(15, 'Phone number cannot be more thant 15 characters long'),
@@ -24,8 +27,20 @@ export const createUserSchema = z.object({
   planValidity: z.string().optional(),
   profilePhoto: z.string().url().optional(),
   coverPhoto: z.string().url().optional(),
+  status: z
+    .enum(['active', 'blocked'], {
+      message: 'Status must be either active or blocked',
+    })
+    .optional(),
+  isDeleted: z.boolean().optional(),
+});
+
+const loginUserSchema = z.object({
+  password: z.string().nonempty('Password cannot be empty'),
+  email: z.string().email('Invalid email address'),
 });
 
 export const userSchema = {
   createUserSchema,
+  loginUserSchema,
 };
