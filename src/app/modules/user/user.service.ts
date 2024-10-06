@@ -10,7 +10,7 @@ import config from '../../config';
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
   const user = await isUserExistsByEmail(payload?.email);
-  console.log(user);
+
   if (user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is already exist');
   }

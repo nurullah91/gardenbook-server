@@ -11,7 +11,6 @@ const createUser = handleAsync(async (req, res) => {
     message: 'User Created successful',
     data: result,
   });
-  res.send(result);
 });
 const loginUser = handleAsync(async (req, res) => {
   const result = await UserService.loginUser(req.body);
@@ -22,7 +21,6 @@ const loginUser = handleAsync(async (req, res) => {
     message: 'User logged in successfully',
     data: result,
   });
-  res.send(result);
 });
 
 export const UserController = {

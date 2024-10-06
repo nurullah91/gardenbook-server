@@ -21,9 +21,11 @@ const createUserSchema = z.object({
     .string()
     .max(15, 'Phone number cannot be more thant 15 characters long'),
   address: z.string().min(1, 'Address is required'),
-  plan: z.enum(['basic', 'premium'], {
-    message: 'Plan must be either basic or premium',
-  }),
+  plan: z
+    .enum(['basic', 'premium'], {
+      message: 'Plan must be either basic or premium',
+    })
+    .optional(),
   planValidity: z.string().optional(),
   profilePhoto: z.string().url().optional(),
   coverPhoto: z.string().url().optional(),

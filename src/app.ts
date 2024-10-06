@@ -1,4 +1,4 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import router from './app/routes';
 import notFound from './app/middlewares/notFound';
@@ -8,7 +8,12 @@ const app: Application = express();
 
 // parser
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  }),
+);
 
 // Connect the application routes
 app.use('/api/', router);
@@ -51,11 +56,8 @@ app.get('/', (req: Request, res: Response) => {
     </div>
     </div>`);
 });
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  globalErrorHandler(err, req, res, next);
-});
-app.use((req, res, next) => {
-  notFound(req, res, next);
-});
+
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
