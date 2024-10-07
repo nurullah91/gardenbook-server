@@ -12,6 +12,45 @@ const createUser = handleAsync(async (req, res) => {
     data: result,
   });
 });
+
+const updateUser = handleAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserService.updateUserInDB(userId as string, req.body);
+
+  responseSender(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User Created successful',
+    data: result,
+  });
+});
+const updateProfile = handleAsync(async (req, res) => {
+  const { userId } = req.params;
+  const updateDoc = { profilePhoto: req.file?.path };
+  const result = await UserService.updateUserInDB(userId as string, updateDoc);
+
+  responseSender(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Profile photo updated successful',
+    data: result,
+  });
+});
+
+const updateCover = handleAsync(async (req, res) => {
+  const { userId } = req.params;
+
+  const updateDoc = { coverPhoto: req.file?.path };
+  const result = await UserService.updateUserInDB(userId as string, updateDoc);
+
+  responseSender(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Cover photo updated successful',
+    data: result,
+  });
+});
+
 const loginUser = handleAsync(async (req, res) => {
   const result = await UserService.loginUser(req.body);
 
@@ -25,5 +64,8 @@ const loginUser = handleAsync(async (req, res) => {
 
 export const UserController = {
   createUser,
+  updateCover,
+  updateProfile,
   loginUser,
+  updateUser,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { HydratedDocument, Model } from 'mongoose';
 
 export type TUser = {
@@ -15,7 +16,8 @@ export type TUser = {
   plan: 'basic' | 'premium';
   planValidity?: string;
   profilePhoto?: string;
-  coverPhoto: string;
+  coverPhoto?: string;
+  bio?: string;
   status: 'active' | 'blocked';
   isDeleted: boolean;
   createdAt?: Date;
@@ -26,7 +28,7 @@ export type TLoginUser = {
   password: string;
 };
 
-export interface IUserModel extends Model<TUser, {}> {
+export interface IUserModel extends Model<TUser> {
   isUserExistsByEmail(email: string): Promise<HydratedDocument<TUser>>;
 
   isPasswordMatched(

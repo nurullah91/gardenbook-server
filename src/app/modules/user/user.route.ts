@@ -2,18 +2,24 @@ import express from 'express';
 import { UserController } from './user.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { userSchema } from './user.validation';
+import { multerUpload } from '../../config/multer.config';
 
 const router = express.Router();
 
-router.post(
-  '/signup',
-  validateRequest(userSchema.createUserSchema),
-  UserController.createUser,
+router.patch(
+  '/update-user/:userId',
+  validateRequest(userSchema.updateUserSchema),
+  UserController.updateUser,
 );
-router.post(
-  '/login',
-  validateRequest(userSchema.loginUserSchema),
-  UserController.loginUser,
+router.patch(
+  '/update-profile/:userId',
+  multerUpload.single('image'),
+  UserController.updateProfile,
+);
+router.patch(
+  '/update-cover/:userId',
+  multerUpload.single('image'),
+  UserController.updateCover,
 );
 
 export const UserRoutes = router;

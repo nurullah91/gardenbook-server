@@ -46,6 +46,30 @@ const createUserIntoDB = async (payload: TUser) => {
   return { accessToken, refreshToken };
 };
 
+const updateUserInDB = async (userId: string, payload: Partial<TUser>) => {
+  // Check if the user exists by ID
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Update user data
+  const updatedUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+  });
+
+  if (!updatedUser) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to update user',
+    );
+  }
+
+  // Return updated tokens and updated user
+  return updatedUser;
+};
+
 const loginUser = async (payload: TLoginUser) => {
   // checking if the user is exist
   const user = await isUserExistsByEmail(payload?.email);
@@ -104,5 +128,6 @@ const loginUser = async (payload: TLoginUser) => {
 
 export const UserService = {
   createUserIntoDB,
+  updateUserInDB,
   loginUser,
 };
