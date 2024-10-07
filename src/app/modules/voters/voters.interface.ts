@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
 
-export type TVoters = {
-  _id: string;
+export type TVoter = {
+  _id?: string;
+  user: Types.ObjectId;
   post: Types.ObjectId;
-  upVoters: Types.ObjectId[];
-  downVoters: Types.ObjectId[];
+  type: 'upvote' | 'downvote';
 };

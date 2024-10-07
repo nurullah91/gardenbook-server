@@ -1,9 +1,10 @@
 import { model, Schema } from 'mongoose';
-import { TVoters } from './voters.interface';
-const VotersSchema: Schema = new Schema<TVoters>({
+import { TVoter } from './voters.interface';
+
+const VoterSchema: Schema<TVoter> = new Schema<TVoter>({
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
-  upVoters: { type: [Schema.Types.ObjectId], ref: 'User' },
-  downVoters: { type: [Schema.Types.ObjectId], ref: 'User' },
+  type: { type: String, enum: ['upvote', 'downvote'], required: true },
 });
 
-export const Voters = model<TVoters>('Voters', VotersSchema);
+export const Voter = model<TVoter>('Voter', VoterSchema);

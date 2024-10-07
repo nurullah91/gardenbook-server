@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
-// Voters validation schema
-export const createVotersSchema = z.object({
+// Voters validation schema for creating/updating votes
+const votersSchema = z.object({
   post: z.string().min(1, 'Post ID is required'),
-  upVoters: z.array(z.string()).optional(),
-  downVoters: z.array(z.string()).optional(),
+  user: z.string().min(1, 'User ID is required'),
+  voteType: z.enum(['upvote', 'downvote']),
 });
-
-export const votersSchema = {
-  createVotersSchema,
+export const votersValidationSchema = {
+  votersSchema,
 };

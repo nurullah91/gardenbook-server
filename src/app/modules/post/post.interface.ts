@@ -7,4 +7,7 @@ export type TPost = {
   user: Types.ObjectId;
   category: string;
   contentType: 'free' | 'premium';
+  upvoteCount: number;
+  downvoteCount: number;
+  commentCount: number;
 };
