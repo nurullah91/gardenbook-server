@@ -40,9 +40,37 @@ The platform aims to foster a vibrant community where users can post gardening a
 
 > ### User
 >
-> - PATCH: api/users/:userId
+> - PATCH: api/users/update-user/:userId
 > - PATCH: api/users/update-profile/:userId
 > - PATCH: api/users/update-cover/:userId
+
+> ### Posts
+>
+> - POST: api/posts/crate-post
+> - PATCH: api/posts/update-post/:postId
+
+> ### Vote
+>
+> - POST: api/vote/upvote
+> - POST: api/vote/downvote
+
+> ### Comment
+>
+> - POST: api/comment/create
+> - POST: api/comment/vote/:commentId
+> - PATCH: api/comment/update/:commentId
+
+> ### Follow
+>
+> - GET: api/follow/followers-following/:userId
+> - POST: api/follow/follow-user
+> - POST: api/follow/unfollow-user
+
+> ### Payment
+>
+> - POST: api/payment
+> - PATCH: api/payment/:id
+> - PATCH: api/payment/confirmation
 
 ---
 
