@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post(
   '/create-post',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   multerUpload.array('image'),
   parseBody,
   validateRequest(postSchema.updatePostSchema),
@@ -19,7 +19,7 @@ router.post(
 );
 router.patch(
   '/update-post/:postId',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   multerUpload.array('image'),
   parseBody,
   PostController.updatePost,

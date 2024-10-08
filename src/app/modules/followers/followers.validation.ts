@@ -1,12 +1,17 @@
 import { z } from 'zod';
 
-// Followers validation schema
-export const createFollowersSchema = z.object({
-  user: z.string().min(1, 'User ID is required'),
-  followers: z.array(z.string()).optional(),
-  following: z.array(z.string()).optional(),
+// Follow validation schema
+const followSchema = z.object({
+  userId: z
+    .string()
+    .min(1, 'User ID is required')
+    .nonempty('User ID cannot be empty'),
+  targetUserId: z
+    .string()
+    .min(1, 'Target User ID is required')
+    .nonempty('Target User ID cannot be empty'),
 });
 
-export const followersSchema = {
-  createFollowersSchema,
+export const followValidationSchema = {
+  followSchema,
 };

@@ -4,6 +4,7 @@ import { AuthRoutes } from '../modules/auth/auth.route';
 import { PostRoutes } from '../modules/post/post.route';
 import { VoterRoutes } from '../modules/voters/voter.route';
 import { CommentRoutes } from '../modules/comments/comment.route';
+import { FollowerRoutes } from '../modules/followers/followers.route';
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const allRoutes = [
   {
     path: '/comment',
     route: CommentRoutes,
+  },
+  {
+    path: '/follow',
+    route: FollowerRoutes,
   },
 ];
 
