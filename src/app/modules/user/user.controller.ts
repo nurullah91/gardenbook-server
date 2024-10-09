@@ -13,6 +13,17 @@ const createUser = handleAsync(async (req, res) => {
   });
 });
 
+const getAllUsers = handleAsync(async (req, res) => {
+  const result = await UserService.getAllUsers(req.query);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All users retrieved successfully',
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
 const updateUser = handleAsync(async (req, res) => {
   const { userId } = req.params;
   const result = await UserService.updateUserInDB(userId as string, req.body);
@@ -24,6 +35,7 @@ const updateUser = handleAsync(async (req, res) => {
     data: result,
   });
 });
+
 const updateProfile = handleAsync(async (req, res) => {
   const { userId } = req.params;
   const updateDoc = { profilePhoto: req.file?.path };
@@ -64,6 +76,7 @@ const loginUser = handleAsync(async (req, res) => {
 
 export const UserController = {
   createUser,
+  getAllUsers,
   updateCover,
   updateProfile,
   loginUser,

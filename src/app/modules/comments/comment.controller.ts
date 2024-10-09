@@ -15,6 +15,19 @@ const createComment = handleAsync(async (req, res) => {
   });
 });
 
+const getAllComments = handleAsync(async (req, res) => {
+  const { postId } = req.params;
+  const result = await CommentServices.getAllCommentsFromDB(req.query, postId);
+
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All comments are retrieved successfully',
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
 const updateComment = handleAsync(async (req, res) => {
   const { commentId } = req.params;
   const commentData = req.body;
@@ -25,6 +38,17 @@ const updateComment = handleAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Comment updated successfully',
+    data: result,
+  });
+});
+
+const deleteSingleComment = handleAsync(async (req, res) => {
+  const { commentId } = req.params;
+  const result = await CommentServices.deleteSingleCommentFromDB(commentId);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Comment is deleted successfully',
     data: result,
   });
 });
@@ -52,4 +76,6 @@ export const CommentController = {
   createComment,
   updateComment,
   voteOnComment,
+  getAllComments,
+  deleteSingleComment,
 };

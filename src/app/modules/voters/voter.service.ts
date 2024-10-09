@@ -62,7 +62,30 @@ const downvotePost = async (userId: string, postId: string) => {
   return post;
 };
 
+const getAllVotersOfAPost = async (postId: string) => {
+  // Find all upvoters and downvoters for the post
+  const upVoters = await Voter.find({ post: postId, type: 'upvote' }).populate(
+    'user',
+  );
+  const downVoters = await Voter.find({
+    post: postId,
+    type: 'downvote',
+  }).populate('user');
+
+  // Check if voters exist for the post
+  if (!upVoters.length && !downVoters.length) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No voters found for this post');
+  }
+
+  // Return upvoters and downvoters
+  return {
+    upVoters: upVoters.map((voter) => voter.user),
+    downVoters: downVoters.map((voter) => voter.user),
+  };
+};
+
 export const VoteServices = {
   upvotePost,
+  getAllVotersOfAPost,
   downvotePost,
 };

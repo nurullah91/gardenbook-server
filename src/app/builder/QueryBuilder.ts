@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FilterQuery, Query } from 'mongoose';
 
-type TRoomFilterQuery<T> = FilterQuery<T> & {
-  capacity?: { $gte?: number };
-  pricePerSlot?: { $gte?: number; $lte?: number };
+type TPostFilterQuery<T> = FilterQuery<T> & {
+  categories?: { $in?: string[] };
+  tags?: { $in?: string[] };
 };
 
 class QueryBuilder<T> {
@@ -32,43 +32,44 @@ class QueryBuilder<T> {
   }
 
   filter() {
-    const queryObj = { ...this.query }; //make a copy of query objects
+    const queryObj = { ...this.query }; // Copy of query object
 
-    //exclude all the fields without filter, minPrice, maxPrice, and capacity
+    // Exclude fields that are not for filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    // Create an empty filter object
-    const filterConditions: TRoomFilterQuery<T> = {};
+    // Create a filter object based on model specifics like categories and tags
+    const filterConditions: TPostFilterQuery<T> = {};
 
-    // Filter by capacity
-    if (queryObj.capacity !== undefined) {
-      filterConditions.capacity = { $gte: queryObj.capacity as number };
+    // Filter by categories (if relevant to your model)
+    if (queryObj.categories) {
+      filterConditions.categories = { $in: queryObj.categories as string[] };
     }
 
-    // Filter by price
-    const priceConditions: Record<string, number> = {};
-    if (queryObj.minPrice !== undefined) {
-      priceConditions.$gte = queryObj.minPrice as number;
-    }
-    if (queryObj.maxPrice !== undefined) {
-      priceConditions.$lte = queryObj.maxPrice as number;
+    // Filter by tags (if relevant to your model)
+    if (queryObj.tags) {
+      filterConditions.tags = { $in: queryObj.tags as string[] };
     }
 
-    if (Object.keys(priceConditions).length > 0) {
-      filterConditions.pricePerSlot = priceConditions as any;
-    }
-
-    // Apply the filters to the model query
+    // Apply filters to the query
     this.modelQuery = this.modelQuery.find(filterConditions);
 
     return this;
   }
 
   sort() {
-    const sort =
-      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt';
-    this.modelQuery = this.modelQuery.sort(sort as string);
+    const sortField = this.query.sort as string;
+    if (sortField === 'upvoteCount') {
+      // Sorting by upvote count for posts
+      this.modelQuery = this.modelQuery.sort({ upvoteCount: -1 });
+    } else if (sortField === 'downvoteCount') {
+      // Sorting by upvote count for posts
+      this.modelQuery = this.modelQuery.sort({ downvoteCount: -1 });
+    } else {
+      // Default sorting by creation date
+      const sort = sortField?.split(',')?.join(' ') || '-createdAt';
+      this.modelQuery = this.modelQuery.sort(sort as string);
+    }
 
     return this;
   }
@@ -86,12 +87,13 @@ class QueryBuilder<T> {
   fields() {
     const fields =
       (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
-
     this.modelQuery = this.modelQuery.select(fields);
+
     return this;
   }
+
   async countTotal() {
-    const totalQueries = { ...this.modelQuery.getFilter(), isDeleted: false };
+    const totalQueries = { ...this.modelQuery.getFilter() };
     const total = await this.modelQuery.model.countDocuments(totalQueries);
     const page = Number(this?.query?.page) || 1;
     const limit = Number(this?.query?.limit) || 10;

@@ -13,6 +13,8 @@ router.post(
   validateRequest(paymentSchema.createPaymentSchema),
   paymentController.createPayment,
 );
+
+router.get('/', checkAuth(USER_ROLE.admin), paymentController.getAllPayments);
 // router.get('/', checkAuth(USER_ROLE.admin, USER_ROLE.user), paymentController);
 router.patch(
   '/:id',

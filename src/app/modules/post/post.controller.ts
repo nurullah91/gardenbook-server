@@ -22,6 +22,28 @@ const createPost = handleAsync(async (req, res) => {
   });
 });
 
+const getAllPosts = handleAsync(async (req, res) => {
+  const result = await PostServices.getAllPostsFromDB(req.query);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All posts are retrieved successfully',
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
+const getSinglePost = handleAsync(async (req, res) => {
+  const { postId } = req.params;
+  const result = await PostServices.getSinglePostFromDB(postId);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Post is retrieved successfully',
+    data: result,
+  });
+});
+
 const updatePost = handleAsync(async (req, res) => {
   const { postId } = req.params;
   const images = req.files as Express.Multer.File[];
@@ -42,7 +64,21 @@ const updatePost = handleAsync(async (req, res) => {
   });
 });
 
+const deleteSinglePost = handleAsync(async (req, res) => {
+  const { postId } = req.params;
+  const result = await PostServices.deleteSinglePostFromDB(postId);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Post is deleted successfully',
+    data: result,
+  });
+});
+
 export const PostController = {
   createPost,
   updatePost,
+  deleteSinglePost,
+  getSinglePost,
+  getAllPosts,
 };

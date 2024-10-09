@@ -6,6 +6,7 @@ import { isUserExistsByEmail } from './user.utils';
 import { USER_ROLE } from './user.constant';
 import { createToken } from '../../utils/jwtToken';
 import config from '../../config';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
@@ -44,6 +45,22 @@ const createUserIntoDB = async (payload: TUser) => {
     config.jwt_refresh_expires_in as string,
   );
   return { accessToken, refreshToken };
+};
+
+const getAllUsers = async (query: Record<string, unknown>) => {
+  const allUsersQuery = new QueryBuilder(User.find({ isDeleted: false }), query)
+    .search(['name', 'email', 'role', 'phone', 'address', 'plan'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await allUsersQuery.countTotal();
+  const result = await allUsersQuery.modelQuery;
+  return {
+    meta,
+    result,
+  };
 };
 
 const updateUserInDB = async (userId: string, payload: Partial<TUser>) => {
@@ -128,6 +145,7 @@ const loginUser = async (payload: TLoginUser) => {
 
 export const UserService = {
   createUserIntoDB,
+  getAllUsers,
   updateUserInDB,
   loginUser,
 };

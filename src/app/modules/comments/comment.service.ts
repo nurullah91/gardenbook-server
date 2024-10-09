@@ -5,6 +5,7 @@ import { Post } from '../post/post.model';
 import { TComment } from './comment.interface';
 import { Comment } from './comment.mode';
 import { Types } from 'mongoose';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createComment = async (payload: TComment) => {
   // Check if user and post exist
@@ -36,8 +37,29 @@ const updateComment = async (commentId: string, payload: Partial<TComment>) => {
   return updatedComment;
 };
 
-// Handle upvote/downvote logic
+const getAllCommentsFromDB = async (
+  query: Record<string, unknown>,
+  postId: string,
+) => {
+  const allPostsQuery = new QueryBuilder(
+    Comment.find({ isDeleted: false, post: postId }),
+    query,
+  )
+    .search(['comment'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
+  const meta = await allPostsQuery.countTotal();
+  const result = await allPostsQuery.modelQuery;
+  return {
+    meta,
+    result,
+  };
+};
+
+// Handle upvote/downvote logic
 const voteOnComment = async (
   commentId: string,
   userId: string,
@@ -93,8 +115,24 @@ const voteOnComment = async (
   return comment;
 };
 
+const deleteSingleCommentFromDB = async (commentId: string) => {
+  const result = await Comment.findByIdAndUpdate(
+    commentId,
+    {
+      isDeleted: true,
+    },
+    {
+      new: true,
+    },
+  );
+
+  return result;
+};
+
 export const CommentServices = {
   createComment,
+  getAllCommentsFromDB,
+  deleteSingleCommentFromDB,
   updateComment,
   voteOnComment,
 };

@@ -14,6 +14,14 @@ router.patch(
   validateRequest(userSchema.updateUserSchema),
   UserController.updateUser,
 );
+
+router.get(
+  '/',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  validateRequest(userSchema.updateUserSchema),
+  UserController.updateUser,
+);
+
 router.patch(
   '/update-profile/:userId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),

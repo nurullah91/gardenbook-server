@@ -26,6 +26,17 @@ const updatePayment = handleAsync(async (req, res) => {
   });
 });
 
+const getAllPayments = handleAsync(async (req, res) => {
+  const result = await PaymentServices.getAllPaymentsFromDB(req.query);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Payments retrieved successfully',
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
 const confirmationController = async (req: Request, res: Response) => {
   const { status, txnId } = req.query;
   await PaymentServices.paymentConfirmation(txnId as string);
@@ -38,5 +49,6 @@ const confirmationController = async (req: Request, res: Response) => {
 export const paymentController = {
   confirmationController,
   createPayment,
+  getAllPayments,
   updatePayment,
 };

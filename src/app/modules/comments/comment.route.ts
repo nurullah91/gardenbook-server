@@ -13,6 +13,19 @@ router.post(
   validateRequest(commentSchema.createCommentSchema),
   CommentController.createComment,
 );
+
+router.get(
+  '/:postId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  CommentController.getAllComments,
+);
+
+router.delete(
+  '/:commentId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  CommentController.deleteSingleComment,
+);
+
 router.post(
   '/vote/:commentId',
   checkAuth(USER_ROLE.user),

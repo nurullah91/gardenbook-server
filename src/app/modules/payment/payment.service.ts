@@ -5,6 +5,7 @@ import { TPayment } from './payment.interface';
 import { generateTransactionId } from '../../utils/generateTransactionId';
 import { Payment } from './payment.model';
 import { initiatePayment, verifyPayment } from '../../utils/initiatePayment';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createPayment = async (payload: TPayment) => {
   const { user } = payload;
@@ -61,8 +62,28 @@ const paymentConfirmation = async (txnId: string) => {
   }
   return result;
 };
+
+const getAllPaymentsFromDB = async (query: Record<string, unknown>) => {
+  const allPaymentsQuery = new QueryBuilder(
+    Payment.find({ isDeleted: false }),
+    query,
+  )
+    .search(['paymentMethod', 'email', 'txnId'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await allPaymentsQuery.countTotal();
+  const result = await allPaymentsQuery.modelQuery;
+  return {
+    meta,
+    result,
+  };
+};
 export const PaymentServices = {
   createPayment,
   updatePayment,
+  getAllPaymentsFromDB,
   paymentConfirmation,
 };

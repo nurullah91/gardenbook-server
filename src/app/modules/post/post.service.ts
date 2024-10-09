@@ -3,6 +3,7 @@ import AppError from '../../errors/AppError';
 import { TPost } from './post.interface';
 import { User } from '../user/user.model';
 import { Post } from './post.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createPostIntoDB = async (payload: TPost) => {
   // check if the user is exist
@@ -13,6 +14,27 @@ const createPostIntoDB = async (payload: TPost) => {
   }
   const result = await Post.create(payload);
 
+  return result;
+};
+
+const getAllPostsFromDB = async (query: Record<string, unknown>) => {
+  const allPostsQuery = new QueryBuilder(Post.find({ isDeleted: false }), query)
+    .search(['post', 'category', 'contentType'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await allPostsQuery.countTotal();
+  const result = await allPostsQuery.modelQuery;
+  return {
+    meta,
+    result,
+  };
+};
+
+const getSinglePostFromDB = async (id: string) => {
+  const result = await Post.findById(id);
   return result;
 };
 
@@ -40,7 +62,24 @@ const updatePostInDB = async (postId: string, payload: Partial<TPost>) => {
   return result;
 };
 
+const deleteSinglePostFromDB = async (id: string) => {
+  const result = await Post.findByIdAndUpdate(
+    id,
+    {
+      isDeleted: true,
+    },
+    {
+      new: true,
+    },
+  );
+
+  return result;
+};
+
 export const PostServices = {
   createPostIntoDB,
+  getAllPostsFromDB,
+  getSinglePostFromDB,
   updatePostInDB,
+  deleteSinglePostFromDB,
 };

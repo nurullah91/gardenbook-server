@@ -17,6 +17,24 @@ router.post(
   validateRequest(postSchema.updatePostSchema),
   PostController.createPost,
 );
+
+router.get(
+  '/',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  PostController.getAllPosts,
+);
+
+router.get(
+  '/:postId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  PostController.getSinglePost,
+);
+
+router.delete(
+  '/:postId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  PostController.deleteSinglePost,
+);
 router.patch(
   '/update-post/:postId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),

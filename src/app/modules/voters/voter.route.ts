@@ -19,4 +19,9 @@ router.post(
   validateRequest(votersValidationSchema.votersSchema),
   VoteController.downvotePost,
 );
+router.get(
+  '/:postId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  VoteController.getAllVotersOfPost,
+);
 export const VoterRoutes = router;

@@ -29,7 +29,19 @@ const downvotePost = handleAsync(async (req, res) => {
   });
 });
 
+const getAllVotersOfPost = handleAsync(async (req, res) => {
+  const { postId } = req.params;
+  const result = await VoteServices.getAllVotersOfAPost(postId);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All votes are retrieved successfully',
+    data: result,
+  });
+});
+
 export const VoteController = {
   upvotePost,
   downvotePost,
+  getAllVotersOfPost,
 };
