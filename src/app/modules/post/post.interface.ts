@@ -10,4 +10,5 @@ export type TPost = {
   upvoteCount: number;
   downvoteCount: number;
   commentCount: number;
+  isDeleted: boolean;
 };

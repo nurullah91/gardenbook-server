@@ -30,11 +30,7 @@ router.get(
   PostController.getSinglePost,
 );
 
-router.delete(
-  '/:postId',
-  checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  PostController.deleteSinglePost,
-);
+router.delete('/:postId', PostController.deleteSinglePost);
 router.patch(
   '/update-post/:postId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),

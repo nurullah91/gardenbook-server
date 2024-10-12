@@ -27,6 +27,7 @@ const getAllPostsFromDB = async (query: Record<string, unknown>) => {
 
   const meta = await allPostsQuery.countTotal();
   const result = await allPostsQuery.modelQuery;
+
   return {
     meta,
     result,
