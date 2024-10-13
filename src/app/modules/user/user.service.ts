@@ -7,6 +7,8 @@ import { USER_ROLE } from './user.constant';
 import { createToken } from '../../utils/jwtToken';
 import config from '../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
@@ -30,6 +32,8 @@ const createUserIntoDB = async (payload: TUser) => {
     planValidity: newUser.planValidity,
     profilePhoto: newUser.profilePhoto,
     coverPhoto: newUser.coverPhoto,
+    bio: newUser.bio,
+    passwordChangedAt: newUser.passwordChangedAt,
     status: newUser.status,
   };
 
@@ -122,6 +126,8 @@ const loginUser = async (payload: TLoginUser) => {
     planValidity: user.planValidity,
     profilePhoto: user.profilePhoto,
     coverPhoto: user.coverPhoto,
+    bio: user.bio,
+    passwordChangedAt: user.passwordChangedAt,
     status: user.status,
   };
 
@@ -143,9 +149,113 @@ const loginUser = async (payload: TLoginUser) => {
   };
 };
 
+const refreshToken = async (token: string) => {
+  // checking if the given token is valid
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_secret as string,
+  ) as JwtPayload;
+
+  const { email, iat } = decoded;
+
+  // checking if the user is exist
+  const user = await User.isUserExistsByEmail(email);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+  }
+
+  // checking if the user is blocked
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is blocked!');
+  }
+
+  if (
+    user.passwordChangedAt &&
+    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
+  }
+
+  const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+
+    phone: user.phone,
+    address: user.address,
+    plan: user.plan,
+    planValidity: user.planValidity,
+    profilePhoto: user.profilePhoto,
+    coverPhoto: user.coverPhoto,
+    bio: user.bio,
+    passwordChangedAt: user.passwordChangedAt,
+    status: user.status,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return {
+    accessToken,
+  };
+};
+
+const changePassword = async (
+  userData: JwtPayload,
+  payload: { oldPassword: string; newPassword: string },
+) => {
+  // checking if the user is exist
+  const user = await User.isUserExistsByEmail(userData.email);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+  }
+
+  // checking if the user is blocked
+
+  const userStatus = user?.status;
+
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
+  }
+
+  //checking if the password is correct
+
+  if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
+    throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
+
+  //hash new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  await User.findOneAndUpdate(
+    {
+      email: userData.email,
+      role: userData.role,
+    },
+    {
+      password: newHashedPassword,
+      passwordChangedAt: new Date(),
+    },
+  );
+
+  return null;
+};
+
 export const UserService = {
   createUserIntoDB,
   getAllUsers,
   updateUserInDB,
   loginUser,
+  refreshToken,
+  changePassword,
 };

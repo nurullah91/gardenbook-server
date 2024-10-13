@@ -29,6 +29,9 @@ const userSchema: Schema = new Schema<TUser>(
     },
     isDeleted: { type: Boolean, default: false },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
+    passwordChangedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -77,4 +80,13 @@ userSchema.post('save', function (doc, next) {
   doc.password = '';
   next();
 });
+
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
+};
 export const User = model<TUser, IUserModel>('User', userSchema);

@@ -18,19 +18,16 @@ router.post(
   PostController.createPost,
 );
 
-router.get(
-  '/',
-  checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  PostController.getAllPosts,
-);
+router.get('/', PostController.getAllPosts);
 
-router.get(
+router.get('/:postId', PostController.getSinglePost);
+
+router.delete(
   '/:postId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  PostController.getSinglePost,
+  PostController.deleteSinglePost,
 );
 
-router.delete('/:postId', PostController.deleteSinglePost);
 router.patch(
   '/update-post/:postId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),

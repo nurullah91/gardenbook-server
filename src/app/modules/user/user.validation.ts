@@ -82,8 +82,18 @@ const loginUserSchema = z.object({
   email: z.string().email('Invalid email address'),
 });
 
+const changePasswordValidationSchema = z.object({
+  body: z.object({
+    oldPassword: z.string({
+      required_error: 'Old password is required',
+    }),
+    newPassword: z.string({ required_error: 'Password is required' }),
+  }),
+});
+
 export const userSchema = {
   createUserSchema,
   updateUserSchema,
   loginUserSchema,
+  changePasswordValidationSchema,
 };

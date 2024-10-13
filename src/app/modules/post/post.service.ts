@@ -18,7 +18,10 @@ const createPostIntoDB = async (payload: TPost) => {
 };
 
 const getAllPostsFromDB = async (query: Record<string, unknown>) => {
-  const allPostsQuery = new QueryBuilder(Post.find({ isDeleted: false }), query)
+  const allPostsQuery = new QueryBuilder(
+    Post.find({ isDeleted: false }).populate('user'),
+    query,
+  )
     .search(['post', 'category', 'contentType'])
     .filter()
     .sort()

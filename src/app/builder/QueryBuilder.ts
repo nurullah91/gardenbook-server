@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FilterQuery, Query } from 'mongoose';
 
 type TPostFilterQuery<T> = FilterQuery<T> & {
   categories?: { $in?: string[] };
-  tags?: { $in?: string[] };
+  contentType?: { $in?: string[] } | string;
 };
-
 class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
   public query: Record<string, unknown>;
@@ -38,20 +36,26 @@ class QueryBuilder<T> {
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
     excludeFields.forEach((el) => delete queryObj[el]);
 
-    // Create a filter object based on model specifics like categories and tags
+    // Create a filter object
     const filterConditions: TPostFilterQuery<T> = {};
 
-    // Filter by categories (if relevant to your model)
+    // Handle contentType filtering
+    if (queryObj.contentType) {
+      if (queryObj.contentType === 'all') {
+        filterConditions.contentType = { $in: ['free', 'premium'] };
+      } else if (Array.isArray(queryObj.contentType)) {
+        filterConditions.contentType = {
+          $in: queryObj.contentType as string[],
+        };
+      } else {
+        filterConditions.contentType = queryObj.contentType as string;
+      }
+    }
+
     if (queryObj.categories) {
       filterConditions.categories = { $in: queryObj.categories as string[] };
     }
 
-    // Filter by tags (if relevant to your model)
-    if (queryObj.tags) {
-      filterConditions.tags = { $in: queryObj.tags as string[] };
-    }
-
-    // Apply filters to the query
     this.modelQuery = this.modelQuery.find(filterConditions);
 
     return this;

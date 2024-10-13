@@ -2,6 +2,7 @@ import { UserService } from './user.service';
 import handleAsync from '../../utils/handleAsync';
 import responseSender from '../../utils/responseSender';
 import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
 const createUser = handleAsync(async (req, res) => {
   const result = await UserService.createUserIntoDB(req.body);
 
@@ -74,6 +75,32 @@ const loginUser = handleAsync(async (req, res) => {
   });
 });
 
+const changePassword = handleAsync(async (req, res) => {
+  const { ...passwordData } = req.body;
+
+  const result = await UserService.changePassword(
+    req.user as JwtPayload,
+    passwordData,
+  );
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password updated successfully!',
+    data: result,
+  });
+});
+
+const refreshToken = handleAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  const result = await UserService.refreshToken(refreshToken);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Access token retrieved successfully!',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
   getAllUsers,
@@ -81,4 +108,6 @@ export const UserController = {
   updateProfile,
   loginUser,
   updateUser,
+  changePassword,
+  refreshToken,
 };

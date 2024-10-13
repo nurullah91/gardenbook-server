@@ -18,6 +18,7 @@ export type TUser = {
   profilePhoto?: string;
   coverPhoto?: string;
   bio?: string;
+  passwordChangedAt?: Date;
   status: 'active' | 'blocked';
   isDeleted: boolean;
   createdAt?: Date;
@@ -35,4 +36,9 @@ export interface IUserModel extends Model<TUser> {
     plainTextPassword: string,
     hashedPassword: string,
   ): Promise<HydratedDocument<TUser>>;
+
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number,
+  ): boolean;
 }
