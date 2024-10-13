@@ -20,6 +20,8 @@ export type TUser = {
   bio?: string;
   passwordChangedAt?: Date;
   status: 'active' | 'blocked';
+  totalUpvoteGained: number;
+  totalDownvoteGained: number;
   isDeleted: boolean;
   createdAt?: Date;
   updatedAt?: Date;
