@@ -21,6 +21,11 @@ const createComment = async (payload: TComment) => {
   }
 
   const newComment = await Comment.create(payload);
+
+  //post commentCount increase
+  post.commentCount += 1;
+  await post.save();
+
   return newComment;
 };
 
@@ -33,7 +38,10 @@ const updateComment = async (commentId: string, payload: Partial<TComment>) => {
 
   const updatedComment = await Comment.findByIdAndUpdate(commentId, payload, {
     new: true,
-  });
+  })
+    .populate('user')
+    .populate('downVoters')
+    .populate('upVoters');
   return updatedComment;
 };
 
@@ -41,8 +49,11 @@ const getAllCommentsFromDB = async (
   query: Record<string, unknown>,
   postId: string,
 ) => {
-  const allPostsQuery = new QueryBuilder(
-    Comment.find({ isDeleted: false, post: postId }),
+  const allCommentsOfPostQuery = new QueryBuilder(
+    Comment.find({ isDeleted: false, post: postId })
+      .populate('user')
+      .populate('upVoters')
+      .populate('downVoters'),
     query,
   )
     .search(['comment'])
@@ -51,8 +62,8 @@ const getAllCommentsFromDB = async (
     .paginate()
     .fields();
 
-  const meta = await allPostsQuery.countTotal();
-  const result = await allPostsQuery.modelQuery;
+  const meta = await allCommentsOfPostQuery.countTotal();
+  const result = await allCommentsOfPostQuery.modelQuery;
   return {
     meta,
     result,

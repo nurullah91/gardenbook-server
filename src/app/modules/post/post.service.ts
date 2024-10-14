@@ -38,7 +38,7 @@ const getAllPostsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSinglePostFromDB = async (id: string) => {
-  const result = await Post.findById(id);
+  const result = await Post.findById(id).populate('user');
   return result;
 };
 

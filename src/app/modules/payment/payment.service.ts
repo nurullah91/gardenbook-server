@@ -48,24 +48,29 @@ const updatePayment = async (
 const paymentConfirmation = async (txnId: string) => {
   const verifyPaymentResponse = await verifyPayment(txnId);
 
+  const paymentInfo = await Payment.findOne({ txnId }).populate('user');
+
   let result;
   if (
     verifyPaymentResponse &&
     verifyPaymentResponse.pay_status === 'Successful'
   ) {
-    result = await Payment.findOneAndUpdate(
-      { txnId },
-      {
-        paymentStatus: 'paid',
-      },
-    ).populate('user');
+    result = await Payment.findByIdAndUpdate(paymentInfo?._id, {
+      paymentStatus: 'paid',
+    }).populate('user');
+
+    // update user plan and plan validity
+    await User.findByIdAndUpdate(paymentInfo?.user?._id, {
+      plan: 'premium',
+      planValidity: new Date(),
+    });
   }
   return result;
 };
 
 const getAllPaymentsFromDB = async (query: Record<string, unknown>) => {
   const allPaymentsQuery = new QueryBuilder(
-    Payment.find({ isDeleted: false }),
+    Payment.find({ isDeleted: false }).populate('user'),
     query,
   )
     .search(['paymentMethod', 'email', 'txnId'])

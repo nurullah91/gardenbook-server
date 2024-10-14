@@ -72,7 +72,10 @@ const unfollowUser = async (userId: string, userIdToUnfollow: string) => {
 };
 
 const getFollowersAndFollowing = async (userId: string) => {
-  const userFollowersData = await Followers.findOne({ user: userId });
+  const userFollowersData = await Followers.findOne({ user: userId })
+    .populate('user')
+    .populate('following')
+    .populate('following');
 
   if (!userFollowersData) {
     throw new AppError(
