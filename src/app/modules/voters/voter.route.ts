@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post(
   '/upvote',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(votersValidationSchema.votersSchema),
   VoteController.upvotePost,
 );
@@ -19,9 +19,5 @@ router.post(
   validateRequest(votersValidationSchema.votersSchema),
   VoteController.downvotePost,
 );
-router.get(
-  '/:postId',
-  checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  VoteController.getAllVotersOfPost,
-);
+router.get('/:postId', VoteController.getAllVotersOfPost);
 export const VoterRoutes = router;
