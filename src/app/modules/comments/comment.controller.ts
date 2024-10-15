@@ -18,7 +18,6 @@ const createComment = handleAsync(async (req, res) => {
 const getAllComments = handleAsync(async (req, res) => {
   const { postId } = req.params;
   const result = await CommentServices.getAllCommentsFromDB(req.query, postId);
-
   responseSender(res, {
     statusCode: httpStatus.OK,
     success: true,

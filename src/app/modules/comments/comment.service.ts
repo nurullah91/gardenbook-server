@@ -61,9 +61,9 @@ const getAllCommentsFromDB = async (
     .sort()
     .paginate()
     .fields();
-
   const meta = await allCommentsOfPostQuery.countTotal();
   const result = await allCommentsOfPostQuery.modelQuery;
+
   return {
     meta,
     result,

@@ -31,7 +31,7 @@ const allRoutes = [
     route: CommentRoutes,
   },
   {
-    path: '/follow',
+    path: '/follower',
     route: FollowerRoutes,
   },
   {

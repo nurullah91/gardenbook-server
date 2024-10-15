@@ -18,8 +18,12 @@ router.patch(
 router.get(
   '/',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  validateRequest(userSchema.updateUserSchema),
-  UserController.updateUser,
+  UserController.getAllUsers,
+);
+router.get(
+  '/:userId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  UserController.getSingleUser,
 );
 
 router.patch(

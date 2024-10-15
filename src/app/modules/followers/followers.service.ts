@@ -78,10 +78,7 @@ const getFollowersAndFollowing = async (userId: string) => {
     .populate('following');
 
   if (!userFollowersData) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'User followers/following not found',
-    );
+    return [];
   }
 
   return userFollowersData;

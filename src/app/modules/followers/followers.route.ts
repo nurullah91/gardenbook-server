@@ -7,21 +7,18 @@ import checkAuth from '../../middlewares/checkAuth';
 
 const router = express.Router();
 
-router.get(
-  '/followers-following/:userId',
-  FollowerController.getFollowersAndFollowing,
-);
+router.get('/:userId', FollowerController.getFollowersAndFollowing);
 
 router.post(
   '/follow-user',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(followValidationSchema.followSchema),
   FollowerController.followUser,
 );
 
 router.post(
   '/unfollow-user',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(followValidationSchema.followSchema),
   FollowerController.followUser,
 );

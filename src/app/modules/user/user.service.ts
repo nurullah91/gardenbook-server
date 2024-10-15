@@ -9,6 +9,7 @@ import config from '../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { Followers } from '../followers/followers.model';
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
@@ -20,6 +21,9 @@ const createUserIntoDB = async (payload: TUser) => {
   payload.role = USER_ROLE.user;
 
   const newUser = await User.create(payload);
+
+  await Followers.create({ user: newUser._id });
+
   const jwtPayload = {
     _id: newUser._id,
     name: newUser.name,
@@ -65,6 +69,10 @@ const getAllUsers = async (query: Record<string, unknown>) => {
     meta,
     result,
   };
+};
+const getSingleUserFromDB = async (id: string) => {
+  const user = User.findById(id);
+  return user;
 };
 
 const updateUserInDB = async (userId: string, payload: Partial<TUser>) => {
@@ -254,6 +262,7 @@ const changePassword = async (
 export const UserService = {
   createUserIntoDB,
   getAllUsers,
+  getSingleUserFromDB,
   updateUserInDB,
   loginUser,
   refreshToken,

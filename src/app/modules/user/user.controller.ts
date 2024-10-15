@@ -3,6 +3,7 @@ import handleAsync from '../../utils/handleAsync';
 import responseSender from '../../utils/responseSender';
 import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
+
 const createUser = handleAsync(async (req, res) => {
   const result = await UserService.createUserIntoDB(req.body);
 
@@ -22,6 +23,17 @@ const getAllUsers = handleAsync(async (req, res) => {
     message: 'All users retrieved successfully',
     meta: result.meta,
     data: result.result,
+  });
+});
+
+const getSingleUser = handleAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserService.getSingleUserFromDB(userId);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Users data retrieved successfully',
+    data: result,
   });
 });
 
@@ -104,6 +116,7 @@ const refreshToken = handleAsync(async (req, res) => {
 export const UserController = {
   createUser,
   getAllUsers,
+  getSingleUser,
   updateCover,
   updateProfile,
   loginUser,
