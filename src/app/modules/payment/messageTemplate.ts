@@ -55,12 +55,12 @@ export const messageTemplate = (status: string) => {
             ? `
             <h1>Payment Successful!</h1>
             <p>Your transaction was completed successfully.</p>
-            <a href="https://meeting-spot.netlify.app/my-bookings">Go to My Bookings</a>
+            <a href="https://gardenbook-client.vercel.app/user/dashboard">Go to Dashboard</a>
         `
             : `
             <h1>Payment Failed!</h1>
             <p>Unfortunately, your payment could not be processed.</p>
-            <a href="https://meeting-spot.netlify.app/rooms">Try Again</a>
+            <a href="https://gardenbook-client.vercel.app">Try Again</a>
         `
         }
     </div>

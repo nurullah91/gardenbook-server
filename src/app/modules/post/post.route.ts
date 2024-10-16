@@ -20,6 +20,12 @@ router.post(
 
 router.get('/', PostController.getAllPosts);
 
+router.get(
+  '/:userId',
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
+  PostController.getUserPost,
+);
+
 router.get('/:postId', PostController.getSinglePost);
 
 router.delete(

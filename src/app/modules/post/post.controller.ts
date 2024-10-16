@@ -8,7 +8,6 @@ const createPost = handleAsync(async (req, res) => {
   const images = req.files as Express.Multer.File[];
 
   const postData = req.body;
-
   if (images?.length) {
     postData.postPhotos = images.map((image) => image.path);
   }
@@ -33,6 +32,16 @@ const getAllPosts = handleAsync(async (req, res) => {
   });
 });
 
+const getUserPost = handleAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await PostServices.getUserPostFromDB(userId);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Posts are retrieved successfully',
+    data: result,
+  });
+});
 const getSinglePost = handleAsync(async (req, res) => {
   const { postId } = req.params;
   const result = await PostServices.getSinglePostFromDB(postId);
@@ -78,6 +87,7 @@ const deleteSinglePost = handleAsync(async (req, res) => {
 export const PostController = {
   createPost,
   updatePost,
+  getUserPost,
   deleteSinglePost,
   getSinglePost,
   getAllPosts,

@@ -23,8 +23,8 @@ const createPayment = async (payload: TPayment) => {
   });
 
   const paymentInfo = {
-    transactionId,
     ...payload,
+    txnId: transactionId,
     user: userExists,
   };
   const paymentData = await initiatePayment(paymentInfo);
@@ -59,10 +59,13 @@ const paymentConfirmation = async (txnId: string) => {
       paymentStatus: 'paid',
     }).populate('user');
 
+    const today = new Date();
+    const planValidity = new Date(today.setDate(today.getDate() + 30));
+
     // update user plan and plan validity
     await User.findByIdAndUpdate(paymentInfo?.user?._id, {
       plan: 'premium',
-      planValidity: new Date(),
+      planValidity,
     });
   }
   return result;

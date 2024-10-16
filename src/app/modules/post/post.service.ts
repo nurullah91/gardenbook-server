@@ -37,6 +37,11 @@ const getAllPostsFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
+const getUserPostFromDB = async (id: string) => {
+  const result = await Post.find({ user: id }).populate('user');
+  return result;
+};
+
 const getSinglePostFromDB = async (id: string) => {
   const result = await Post.findById(id).populate('user');
   return result;
@@ -83,6 +88,7 @@ const deleteSinglePostFromDB = async (id: string) => {
 export const PostServices = {
   createPostIntoDB,
   getAllPostsFromDB,
+  getUserPostFromDB,
   getSinglePostFromDB,
   updatePostInDB,
   deleteSinglePostFromDB,
