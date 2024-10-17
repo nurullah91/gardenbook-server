@@ -20,7 +20,7 @@ router.post(
   '/unfollow-user',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(followValidationSchema.followSchema),
-  FollowerController.followUser,
+  FollowerController.unfollowUser,
 );
 
 export const FollowerRoutes = router;

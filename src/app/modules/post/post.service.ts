@@ -38,7 +38,9 @@ const getAllPostsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getUserPostFromDB = async (id: string) => {
-  const result = await Post.find({ user: id }).populate('user');
+  const result = await Post.find({ user: id, isDeleted: false })
+    .populate('user')
+    .sort({ createdAt: -1 });
   return result;
 };
 
