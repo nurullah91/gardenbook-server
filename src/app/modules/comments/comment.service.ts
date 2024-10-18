@@ -136,6 +136,10 @@ const deleteSingleCommentFromDB = async (commentId: string) => {
       new: true,
     },
   );
+  // Decrease comment count from post
+  await Post.findByIdAndUpdate(result?.post, {
+    $inc: { commentCount: -1 },
+  });
 
   return result;
 };

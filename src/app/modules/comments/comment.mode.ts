@@ -15,4 +15,14 @@ const CommentSchema: Schema = new Schema<TComment>(
   },
 );
 
+// Query Middleware
+CommentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+CommentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
 export const Comment = model<TComment>('Comment', CommentSchema);

@@ -98,6 +98,23 @@ const updateUserInDB = async (userId: string, payload: Partial<TUser>) => {
   // Return updated tokens and updated user
   return updatedUser;
 };
+const deleteUserFromDB = async (userId: string) => {
+  // Check if the user exists by ID
+  const updateUser = await User.findByIdAndUpdate(
+    userId,
+    { isDeleted: true },
+    {
+      new: true,
+    },
+  );
+
+  if (!updateUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Failed to delete user');
+  }
+
+  // Return updated tokens and updated user
+  return {};
+};
 
 const loginUser = async (payload: TLoginUser) => {
   // checking if the user is exist
@@ -264,6 +281,7 @@ export const UserService = {
   getAllUsers,
   getSingleUserFromDB,
   updateUserInDB,
+  deleteUserFromDB,
   loginUser,
   refreshToken,
   changePassword,

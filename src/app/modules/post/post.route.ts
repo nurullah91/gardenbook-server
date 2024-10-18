@@ -21,7 +21,7 @@ router.post(
 router.get('/', PostController.getAllPosts);
 
 router.get(
-  '/:userId',
+  '/user/:userId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),
   PostController.getUserPost,
 );

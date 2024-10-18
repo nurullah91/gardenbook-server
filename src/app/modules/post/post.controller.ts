@@ -45,6 +45,7 @@ const getUserPost = handleAsync(async (req, res) => {
 const getSinglePost = handleAsync(async (req, res) => {
   const { postId } = req.params;
   const result = await PostServices.getSinglePostFromDB(postId);
+
   responseSender(res, {
     statusCode: httpStatus.OK,
     success: true,

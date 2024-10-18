@@ -49,6 +49,18 @@ const updateUser = handleAsync(async (req, res) => {
   });
 });
 
+const deleteUser = handleAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await UserService.deleteUserFromDB(userId as string);
+
+  responseSender(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User deleted successful',
+    data: result,
+  });
+});
+
 const updateProfile = handleAsync(async (req, res) => {
   const { userId } = req.params;
   const updateDoc = { profilePhoto: req.file?.path };
@@ -117,6 +129,7 @@ export const UserController = {
   createUser,
   getAllUsers,
   getSingleUser,
+  deleteUser,
   updateCover,
   updateProfile,
   loginUser,

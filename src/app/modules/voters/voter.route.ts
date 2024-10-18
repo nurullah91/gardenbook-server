@@ -15,7 +15,7 @@ router.post(
 );
 router.post(
   '/downvote',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(votersValidationSchema.votersSchema),
   VoteController.downvotePost,
 );

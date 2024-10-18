@@ -5,27 +5,27 @@ import { Voter } from './voters.model';
 import { User } from '../user/user.model';
 
 const upvotePost = async (userId: string, postId: string) => {
-  // Check if the post exists
-  const post = await Post.findById(postId).populate('user'); // Populate to get post's user
+  const post = await Post.findById(postId).populate('user');
   if (!post) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
   }
 
-  // Get the user who owns the post
   const postOwner = post.user;
 
-  // Check if the user has already upvoted the post
+  // Check if the user has already voted
   const existingVote = await Voter.findOne({ user: userId, post: postId });
+
   if (existingVote) {
     if (existingVote.type === 'upvote') {
+      // User has already upvoted, no further action needed
       return null;
     } else if (existingVote.type === 'downvote') {
-      // Remove downvote
+      // Remove the downvote and switch to upvote
       await Voter.findByIdAndDelete(existingVote._id);
       post.downvoteCount -= 1;
 
       await User.findByIdAndUpdate(postOwner._id, {
-        $inc: { totalDownvoteGained: -1 },
+        $inc: { totalDownvoteGained: -1 }, // Decrease downvote count for post owner
       });
     }
   }
@@ -34,7 +34,7 @@ const upvotePost = async (userId: string, postId: string) => {
   await Voter.create({ user: userId, post: postId, type: 'upvote' });
   post.upvoteCount += 1;
 
-  // Update the post owner's totalUpvoteGained
+  // Increase post owner's upvote count
   await User.findByIdAndUpdate(postOwner._id, {
     $inc: { totalUpvoteGained: 1 },
   });
@@ -45,27 +45,26 @@ const upvotePost = async (userId: string, postId: string) => {
 };
 
 const downvotePost = async (userId: string, postId: string) => {
-  const post = await Post.findById(postId).populate('user'); // Populate to get post's user
+  const post = await Post.findById(postId).populate('user');
   if (!post) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
   }
 
-  // Get the user who owns the post
   const postOwner = post.user;
 
-  // Check if the user has already downvoted the post
   const existingVote = await Voter.findOne({ user: userId, post: postId });
+
   if (existingVote) {
     if (existingVote.type === 'downvote') {
+      // User has already downvoted, no further action needed
       return null;
     } else if (existingVote.type === 'upvote') {
-      // Remove upvote
+      // Remove the upvote and switch to downvote
       await Voter.findByIdAndDelete(existingVote._id);
       post.upvoteCount -= 1;
 
-      // Update the post owner's totalUpvoteGained
       await User.findByIdAndUpdate(postOwner._id, {
-        $inc: { totalDownvoteGained: -1 },
+        $inc: { totalUpvoteGained: -1 }, // Decrease upvote count for post owner
       });
     }
   }
@@ -74,9 +73,11 @@ const downvotePost = async (userId: string, postId: string) => {
   await Voter.create({ user: userId, post: postId, type: 'downvote' });
   post.downvoteCount += 1;
 
+  // Increase post owner's downvote count
   await User.findByIdAndUpdate(postOwner._id, {
     $inc: { totalDownvoteGained: 1 },
   });
+
   await post.save();
 
   return post;

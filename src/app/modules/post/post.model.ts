@@ -18,4 +18,15 @@ const PostSchema: Schema = new Schema<TPost>(
   },
 );
 
+// Query Middleware
+PostSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+PostSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
 export const Post = model<TPost>('Post', PostSchema);
