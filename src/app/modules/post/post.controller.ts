@@ -85,11 +85,23 @@ const deleteSinglePost = handleAsync(async (req, res) => {
   });
 });
 
+// Controller to get posts by month
+const getPostsByMonth = handleAsync(async (req, res) => {
+  const result = await PostServices.getPostsByMonthFromDB();
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Posts by Month retrieved successfully',
+    data: result,
+  });
+});
+
 export const PostController = {
   createPost,
   updatePost,
   getUserPost,
   deleteSinglePost,
   getSinglePost,
+  getPostsByMonth,
   getAllPosts,
 };

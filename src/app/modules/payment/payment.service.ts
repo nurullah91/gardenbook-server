@@ -90,9 +90,30 @@ const getAllPaymentsFromDB = async (query: Record<string, unknown>) => {
     result,
   };
 };
+
+// Fetch monthly payments aggregated by month
+const getMonthlyPaymentsFromDB = async () => {
+  const monthlyPayments = await Payment.aggregate([
+    {
+      $match: { paymentStatus: 'paid' },
+    },
+    {
+      $group: {
+        _id: { $month: '$createdAt' },
+        totalAmount: { $sum: '$amount' },
+        paymentCount: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  return monthlyPayments;
+};
+
 export const PaymentServices = {
   createPayment,
   updatePayment,
+  getMonthlyPaymentsFromDB,
   getAllPaymentsFromDB,
   paymentConfirmation,
 };

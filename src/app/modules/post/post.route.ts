@@ -26,6 +26,12 @@ router.get(
   PostController.getUserPost,
 );
 
+router.get(
+  '/get-monthly-posts',
+  checkAuth(USER_ROLE.admin),
+  PostController.getPostsByMonth,
+);
+
 router.get('/:postId', PostController.getSinglePost);
 
 router.delete(

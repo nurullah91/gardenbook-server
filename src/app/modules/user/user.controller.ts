@@ -125,9 +125,21 @@ const refreshToken = handleAsync(async (req, res) => {
   });
 });
 
+// Controller to get active users
+const getActiveUsers = handleAsync(async (req, res) => {
+  const result = await UserService.getActiveUsersFromDB();
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Active Users retrieved successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
   getAllUsers,
+  getActiveUsers,
   getSingleUser,
   deleteUser,
   updateCover,

@@ -37,6 +37,16 @@ const getAllPayments = handleAsync(async (req, res) => {
   });
 });
 
+const getMonthlyPayments = handleAsync(async (req, res) => {
+  const result = await PaymentServices.getMonthlyPaymentsFromDB();
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Monthly Payments retrieved successfully',
+    data: result,
+  });
+});
+
 const confirmationController = async (req: Request, res: Response) => {
   const { status, txnId } = req.query;
   await PaymentServices.paymentConfirmation(txnId as string);
@@ -49,6 +59,7 @@ const confirmationController = async (req: Request, res: Response) => {
 export const paymentController = {
   confirmationController,
   createPayment,
+  getMonthlyPayments,
   getAllPayments,
   updatePayment,
 };

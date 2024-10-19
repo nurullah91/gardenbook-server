@@ -276,10 +276,37 @@ const changePassword = async (
   return null;
 };
 
+// Fetch active users (e.g., users who posted in the last 30 days)
+const getActiveUsersFromDB = async () => {
+  const activeUsers = await User.aggregate([
+    {
+      $lookup: {
+        from: 'posts',
+        localField: '_id',
+        foreignField: 'user',
+        as: 'posts',
+      },
+    },
+    {
+      $match: {
+        'posts.createdAt': {
+          $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        }, // Last 30 days
+      },
+    },
+    {
+      $group: { _id: '$_id', postCount: { $sum: 1 } },
+    },
+  ]);
+
+  return activeUsers;
+};
+
 export const UserService = {
   createUserIntoDB,
   getAllUsers,
   getSingleUserFromDB,
+  getActiveUsersFromDB,
   updateUserInDB,
   deleteUserFromDB,
   loginUser,

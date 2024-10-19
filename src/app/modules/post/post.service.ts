@@ -87,11 +87,27 @@ const deleteSinglePostFromDB = async (id: string) => {
   return result;
 };
 
+// Fetch posts grouped by month
+const getPostsByMonthFromDB = async () => {
+  const postsByMonth = await Post.aggregate([
+    {
+      $group: {
+        _id: { $month: '$createdAt' },
+        postCount: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  return postsByMonth;
+};
+
 export const PostServices = {
   createPostIntoDB,
   getAllPostsFromDB,
   getUserPostFromDB,
   getSinglePostFromDB,
+  getPostsByMonthFromDB,
   updatePostInDB,
   deleteSinglePostFromDB,
 };

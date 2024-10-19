@@ -29,6 +29,12 @@ router.get(
   UserController.getSingleUser,
 );
 
+router.get(
+  '/active-users',
+  checkAuth(USER_ROLE.admin),
+  UserController.getActiveUsers,
+);
+
 router.patch(
   '/update-profile/:userId',
   checkAuth(USER_ROLE.user, USER_ROLE.admin),

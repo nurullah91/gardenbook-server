@@ -15,6 +15,11 @@ router.post(
 );
 
 router.get('/', checkAuth(USER_ROLE.admin), paymentController.getAllPayments);
+router.get(
+  '/get-monthly-payments',
+  checkAuth(USER_ROLE.admin),
+  paymentController.getMonthlyPayments,
+);
 // router.get('/', checkAuth(USER_ROLE.admin, USER_ROLE.user), paymentController);
 router.patch(
   '/:id',
