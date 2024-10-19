@@ -23,7 +23,7 @@ app.get('/', (req: Request, res: Response) => {
     margin: -8px;
     padding: 0; 
     font-family: Arial, sans-serif; 
-    background: linear-gradient(to right, #9100ff, #fe92f5); 
+    background: linear-gradient(to right, #9d00ff, #5888f9); 
     height: 100vh; 
     display: flex; 
     justify-content: center; 
