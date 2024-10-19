@@ -100,11 +100,9 @@ const loginUser = handleAsync(async (req, res) => {
 });
 
 const changePassword = handleAsync(async (req, res) => {
-  const { ...passwordData } = req.body;
-
   const result = await UserService.changePassword(
     req.user as JwtPayload,
-    passwordData,
+    req.body,
   );
   responseSender(res, {
     statusCode: httpStatus.OK,
