@@ -288,18 +288,30 @@ const getActiveUsersFromDB = async () => {
       },
     },
     {
+      $unwind: '$posts', // Unwind the posts array so each post is a separate document
+    },
+    {
       $match: {
         'posts.createdAt': {
-          $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-        }, // Last 30 days
+          $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+        },
       },
     },
     {
-      $group: { _id: '$_id', postCount: { $sum: 1 } },
+      $group: {
+        _id: '$_id',
+        postCount: { $sum: 1 }, // Count posts for each user
+      },
     },
   ]);
 
-  return activeUsers;
+  // Populate user details after aggregation
+  const populatedUsers = await User.populate(activeUsers, {
+    path: '_id',
+    select: 'name email',
+  });
+
+  return populatedUsers;
 };
 
 export const UserService = {

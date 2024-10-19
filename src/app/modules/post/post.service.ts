@@ -96,7 +96,36 @@ const getPostsByMonthFromDB = async () => {
         postCount: { $sum: 1 },
       },
     },
-    { $sort: { _id: 1 } },
+    {
+      $addFields: {
+        month: {
+          $let: {
+            vars: {
+              months: [
+                '',
+                'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+              ],
+            },
+            in: {
+              $arrayElemAt: ['$$months', '$_id'], // Map month number to month name
+            },
+          },
+        },
+      },
+    },
+    { $project: { _id: 0, month: 1, postCount: 1 } }, // Hide _id, return month instead
+    { $sort: { month: 1 } },
   ]);
 
   return postsByMonth;

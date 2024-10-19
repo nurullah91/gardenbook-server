@@ -30,7 +30,7 @@ router.get(
 );
 
 router.get(
-  '/active-users',
+  '/active/get-all-users',
   checkAuth(USER_ROLE.admin),
   UserController.getActiveUsers,
 );
