@@ -131,7 +131,18 @@ const getPostsByMonthFromDB = async () => {
   return postsByMonth;
 };
 
+const getLatestPhotosFromDB = async () => {
+  const posts = await Post.find({})
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .select('postPhotos');
+
+  // Flatten postPhotos from multiple posts and limit to 20
+  const latestPhotos = posts.flatMap((post) => post.postPhotos).slice(0, 20);
+  return latestPhotos;
+};
 export const PostServices = {
+  getLatestPhotosFromDB,
   createPostIntoDB,
   getAllPostsFromDB,
   getUserPostFromDB,

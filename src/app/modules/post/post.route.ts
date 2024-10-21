@@ -33,6 +33,7 @@ router.get(
 );
 
 router.get('/:postId', PostController.getSinglePost);
+router.get('/photos/latest-photos', PostController.getLatestPhotos);
 
 router.delete(
   '/:postId',
@@ -47,4 +48,5 @@ router.patch(
   parseBody,
   PostController.updatePost,
 );
+
 export const PostRoutes = router;

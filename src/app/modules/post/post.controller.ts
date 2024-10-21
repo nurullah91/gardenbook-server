@@ -96,8 +96,20 @@ const getPostsByMonth = handleAsync(async (req, res) => {
   });
 });
 
+const getLatestPhotos = handleAsync(async (req, res) => {
+  const result = await PostServices.getLatestPhotosFromDB();
+
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Latest photos retrieved successfully',
+    data: result,
+  });
+});
+
 export const PostController = {
   createPost,
+  getLatestPhotos,
   updatePost,
   getUserPost,
   deleteSinglePost,
