@@ -10,6 +10,9 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Followers } from '../followers/followers.model';
+import { sendEmail } from '../../utils/sendEmail';
+import { join } from 'path';
+import { readFileSync } from 'fs';
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
@@ -138,7 +141,6 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
 
   //create token and sent to the  client
-
   const jwtPayload = {
     _id: user._id,
     name: user.name,
@@ -276,6 +278,97 @@ const changePassword = async (
   return null;
 };
 
+const forgetPassword = async (email: string) => {
+  // checking if the user is exist
+  const user = await isUserExistsByEmail(email);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+  }
+
+  // checking if the user is blocked
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
+  }
+
+  const jwtPayload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+
+    phone: user.phone,
+    address: user.address,
+    plan: user.plan,
+    planValidity: user.planValidity,
+    profilePhoto: user.profilePhoto,
+    coverPhoto: user.coverPhoto,
+    passwordChangedAt: user.passwordChangedAt,
+    status: user.status,
+  };
+
+  const resetToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    '10m',
+  );
+
+  const resetPasswordLink = `${config.reset_pass_ui_link}/reset-password/?id=${user._id}&resetToken=${resetToken}`;
+
+  const htmlPath = join(__dirname, '../../../views/resetPasswordTemplate.html');
+
+  let htmlTemplate = readFileSync(htmlPath, 'utf-8');
+
+  htmlTemplate = htmlTemplate.replace('{{reset_link}}', resetPasswordLink);
+  htmlTemplate = htmlTemplate.replace(
+    '{{userName}}',
+    `${user?.name?.firstName} ${user?.name?.middleName} ${user?.name?.lastName}`,
+  );
+
+  sendEmail(user.email, htmlTemplate);
+};
+
+// Reset Password by forget method
+const resetPassword = async (
+  token: string,
+  payload: { userId: string; newPassword: string },
+) => {
+  const user = await User.findById(payload.userId);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+  }
+
+  // checking if the user is blocked
+  const userStatus = user?.status;
+  if (userStatus === 'blocked') {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
+  }
+
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+
+  if (payload.userId !== decoded._id) {
+    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
+  }
+
+  //hash new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  await User.findByIdAndUpdate(payload.userId, {
+    password: newHashedPassword,
+    passwordChangedAt: new Date(),
+  });
+
+  return null;
+};
+
 // Fetch active users (e.g., users who posted in the last 30 days)
 const getActiveUsersFromDB = async () => {
   const activeUsers = await User.aggregate([
@@ -324,4 +417,6 @@ export const UserService = {
   loginUser,
   refreshToken,
   changePassword,
+  forgetPassword,
+  resetPassword,
 };

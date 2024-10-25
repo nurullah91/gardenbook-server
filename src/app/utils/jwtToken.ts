@@ -17,7 +17,8 @@ export type TJwtPayload = {
   planValidity?: string;
   profilePhoto?: string;
   coverPhoto?: string;
-  status: 'active' | 'blocked';
+  status?: 'active' | 'blocked';
+  passwordChangedAt?: Date;
 };
 
 export const createToken = (

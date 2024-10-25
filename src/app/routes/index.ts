@@ -6,6 +6,7 @@ import { VoterRoutes } from '../modules/voters/voter.route';
 import { CommentRoutes } from '../modules/comments/comment.route';
 import { FollowerRoutes } from '../modules/followers/followers.route';
 import { PaymentRoutes } from '../modules/payment/payment.route';
+import { GardenRoutes } from '../modules/garden/garden.route';
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const allRoutes = [
   {
     path: '/payment',
     route: PaymentRoutes,
+  },
+  {
+    path: '/garden',
+    route: GardenRoutes,
   },
 ];
 

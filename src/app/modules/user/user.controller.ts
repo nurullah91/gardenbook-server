@@ -123,6 +123,30 @@ const refreshToken = handleAsync(async (req, res) => {
   });
 });
 
+const forgetPassword = handleAsync(async (req, res) => {
+  const { email } = req.body;
+  const result = await UserService.forgetPassword(email);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Reset password mail sent successfully!',
+    data: result,
+  });
+});
+
+const resetPassword = handleAsync(async (req, res) => {
+  const authorization = req.headers.authorization;
+  const token = authorization?.split(' ')[1];
+
+  const result = await UserService.resetPassword(token as string, req.body);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password changed successfully!',
+    data: result,
+  });
+});
+
 // Controller to get active users
 const getActiveUsers = handleAsync(async (req, res) => {
   const result = await UserService.getActiveUsersFromDB();
@@ -145,5 +169,7 @@ export const UserController = {
   loginUser,
   updateUser,
   changePassword,
+  forgetPassword,
   refreshToken,
+  resetPassword,
 };

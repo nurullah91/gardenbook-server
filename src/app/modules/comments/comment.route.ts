@@ -24,12 +24,12 @@ router.delete(
 
 router.post(
   '/vote/:commentId',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   CommentController.voteOnComment,
 );
 router.patch(
   '/update/:commentId',
-  checkAuth(USER_ROLE.user),
+  checkAuth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(commentSchema.updateCommentSchema),
   CommentController.updateComment,
 );
