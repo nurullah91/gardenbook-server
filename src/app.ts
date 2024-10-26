@@ -3,6 +3,7 @@ import cors from 'cors';
 import router from './app/routes';
 import notFound from './app/middlewares/notFound';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import path from 'path';
 
 const app: Application = express();
 
@@ -56,6 +57,8 @@ app.get('/', (req: Request, res: Response) => {
     </div>
     </div>`);
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(globalErrorHandler);
 app.use(notFound);

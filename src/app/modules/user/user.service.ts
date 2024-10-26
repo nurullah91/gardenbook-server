@@ -316,7 +316,10 @@ const forgetPassword = async (email: string) => {
 
   const resetPasswordLink = `${config.reset_pass_ui_link}/reset-password/?id=${user._id}&resetToken=${resetToken}`;
 
-  const htmlPath = join(__dirname, '../../../views/resetPasswordTemplate.html');
+  const htmlPath = join(
+    __dirname,
+    '../../../../public/resetPasswordTemplate.html',
+  );
 
   let htmlTemplate = readFileSync(htmlPath, 'utf-8');
 
