@@ -11,8 +11,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Followers } from '../followers/followers.model';
 import { sendEmail } from '../../utils/sendEmail';
-import { join } from 'path';
-import { readFileSync } from 'fs';
+import { emailTemplate } from '../../utils/emailTemplate';
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
@@ -316,12 +315,7 @@ const forgetPassword = async (email: string) => {
 
   const resetPasswordLink = `${config.reset_pass_ui_link}/reset-password/?id=${user._id}&resetToken=${resetToken}`;
 
-  const htmlPath = join(
-    __dirname,
-    '../../../../public/resetPasswordTemplate.html',
-  );
-
-  let htmlTemplate = readFileSync(htmlPath, 'utf-8');
+  let htmlTemplate = emailTemplate;
 
   htmlTemplate = htmlTemplate.replace('{{reset_link}}', resetPasswordLink);
   htmlTemplate = htmlTemplate.replace(
