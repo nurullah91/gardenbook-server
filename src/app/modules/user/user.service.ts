@@ -11,7 +11,6 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Followers } from '../followers/followers.model';
 import { sendEmail } from '../../utils/sendEmail';
-import { emailTemplate } from '../../utils/emailTemplate';
 
 const createUserIntoDB = async (payload: TUser) => {
   // check if the user is exist
@@ -279,51 +278,99 @@ const changePassword = async (
 
 const forgetPassword = async (email: string) => {
   // checking if the user is exist
-  const user = await isUserExistsByEmail(email);
+  try {
+    const user = await isUserExistsByEmail(email);
 
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+    }
+
+    // checking if the user is blocked
+    const userStatus = user?.status;
+    if (userStatus === 'blocked') {
+      throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
+    }
+
+    const jwtPayload = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+
+      phone: user.phone,
+      address: user.address,
+      plan: user.plan,
+      planValidity: user.planValidity,
+      profilePhoto: user.profilePhoto,
+      coverPhoto: user.coverPhoto,
+      passwordChangedAt: user.passwordChangedAt,
+      status: user.status,
+    };
+
+    const resetToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret as string,
+      '20m',
+    );
+
+    const resetPasswordLink = `${config.reset_pass_ui_link}/reset-password/?id=${user._id}&resetToken=${resetToken}`;
+
+    const htmlTemplate = `<div
+     style="
+      font-family: 'Arial',
+      sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+      color: #333;
+      ">
+        <div style="
+         width: 90%;
+         padding: 20px;
+         margin: 20px auto;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        ">
+          <div style="
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            ">
+            <div style="
+              font-size: 28px;
+              font-weight: bold;
+              color: #2967a7;
+              margin-bottom: 20px;
+              ">
+              Reset Your Password at Gardenbook
+            </div>
+      <p style="font-size: 18px; font-weight: bold;">
+        Hello, ${user?.name?.firstName} ${user?.name?.middleName} ${user?.name?.lastName}
+      </p>
+     <p style="
+       font-size: 16px;
+       margin-bottom: 20px;
+       color: #555;
+       "> 
+        You requested to reset your password for your Gardenbook account. Click the button below within 20 minutes to reset it. 
+      </p>
+      <a href="${resetPasswordLink}" style="display: inline-block; padding: 12px 24px; font-size: 16px; font-weight: bold; color: #ffffff !important; background-color: #2967a7; text-decoration: none; border-radius: 8px; transition: background-color 0.3s ease;">Reset Password</a>
+      <p style="font-size: 16px; margin-bottom: 20px; color: #555;"> If you didn't request a password reset, please ignore this email. </p>
+      <div style="margin-top: 40px; font-size: 14px; color: #aaa;"> &copy; 2024 <span style="cursor: pointer; text-decoration: underline; color: #1a2235 !important;">
+      <a href="https://gardenbook-client.vercel.app/" style="text-decoration: none; color: inherit;">Gardenbook</a> 
+      </span> . All rights reserved. </div>
+       </div> 
+       </div>
+    </div>`;
+
+    const mailInfo = await sendEmail(user.email, htmlTemplate);
+    return mailInfo;
+  } catch {
+    throw new AppError(httpStatus.FORBIDDEN, 'Failed to send email');
   }
-
-  // checking if the user is blocked
-  const userStatus = user?.status;
-  if (userStatus === 'blocked') {
-    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked!');
-  }
-
-  const jwtPayload = {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-
-    phone: user.phone,
-    address: user.address,
-    plan: user.plan,
-    planValidity: user.planValidity,
-    profilePhoto: user.profilePhoto,
-    coverPhoto: user.coverPhoto,
-    passwordChangedAt: user.passwordChangedAt,
-    status: user.status,
-  };
-
-  const resetToken = createToken(
-    jwtPayload,
-    config.jwt_access_secret as string,
-    '10m',
-  );
-
-  const resetPasswordLink = `${config.reset_pass_ui_link}/reset-password/?id=${user._id}&resetToken=${resetToken}`;
-
-  let htmlTemplate = emailTemplate;
-
-  htmlTemplate = htmlTemplate.replace('{{reset_link}}', resetPasswordLink);
-  htmlTemplate = htmlTemplate.replace(
-    '{{userName}}',
-    `${user?.name?.firstName} ${user?.name?.middleName} ${user?.name?.lastName}`,
-  );
-
-  sendEmail(user.email, htmlTemplate);
 };
 
 // Reset Password by forget method

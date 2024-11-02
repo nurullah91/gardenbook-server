@@ -5,7 +5,7 @@ export const sendEmail = async (to: string, html: string) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: true,
+    secure: false,
     auth: {
       user: config.sender_email,
       pass: config.gmail_app_pass,
@@ -13,11 +13,12 @@ export const sendEmail = async (to: string, html: string) => {
   });
 
   // send mail with defined transport object
-  await transporter.sendMail({
+  const mailInfo = await transporter.sendMail({
     from: config.sender_email, // sender address
     to,
-    subject: 'Reset password for Gardenbook',
-    text: 'Reset your password withing 10 minutes',
+    subject: 'Reset password at Gardenbook',
     html,
   });
+
+  return mailInfo.messageId;
 };
