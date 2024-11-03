@@ -55,7 +55,7 @@ export const messageTemplate = (status: string) => {
             ? `
             <h1>Payment Successful!</h1>
             <p>Your transaction was completed successfully.</p>
-            <a href="https://gardenbook-client.vercel.app/user/dashboard">Go to Dashboard</a>
+            <a href="https://gardenbook-client.vercel.app">Go to Home</a>
         `
             : `
             <h1>Payment Failed!</h1>
