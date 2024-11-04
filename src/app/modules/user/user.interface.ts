@@ -14,7 +14,7 @@ export type TUser = {
   phone: string;
   address: string;
   plan: 'basic' | 'premium';
-  planValidity?: string;
+  planValidity?: Date;
   profilePhoto?: string;
   coverPhoto?: string;
   bio?: string;

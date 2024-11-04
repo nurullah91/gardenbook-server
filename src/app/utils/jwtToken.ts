@@ -14,7 +14,7 @@ export type TJwtPayload = {
   phone: string;
   address: string;
   plan: 'basic' | 'premium';
-  planValidity?: string;
+  planValidity?: Date;
   profilePhoto?: string;
   coverPhoto?: string;
   status?: 'active' | 'blocked';

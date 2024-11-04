@@ -60,8 +60,7 @@ const paymentConfirmation = async (txnId: string) => {
     }).populate('user');
 
     const today = new Date();
-    const dateAfter30Days = new Date(today.setDate(today.getDate() + 30));
-    const planValidity = dateAfter30Days.toISOString();
+    const planValidity = new Date(today.setDate(today.getDate() + 30));
 
     // update user plan and plan validity
     await User.findByIdAndUpdate(paymentInfo?.user?._id, {

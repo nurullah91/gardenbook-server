@@ -4,22 +4,16 @@ import { User } from '../modules/user/user.model';
 const checkPlanValidity = async () => {
   try {
     const now = new Date();
-    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // One day before
 
-    // Find users with expired plan validity
-    const planExpiredUsers = await User.find({
-      planValidity: { $lte: oneDayAgo },
-    });
+    // Find and update all users with an expired plan validity in a single query
+    const result = await User.updateMany(
+      { plan: 'premium', planValidity: { $lte: now } },
+      { $set: { plan: 'basic' } },
+    );
 
-    if (planExpiredUsers.length > 0) {
-      console.log(`Found ${planExpiredUsers.length} users with expired plans.`);
-
-      // Update expired users' plans to 'basic'
-      await Promise.all(
-        planExpiredUsers.map(async (user) => {
-          user.plan = 'basic';
-          await user.save();
-        }),
+    if (result.modifiedCount > 0) {
+      console.log(
+        `Downgraded ${result.modifiedCount} users to the basic plan.`,
       );
     } else {
       console.log('No users with expired plans found.');
@@ -31,3 +25,26 @@ const checkPlanValidity = async () => {
 
 // Schedule the function to run daily at midnight (00:00)
 cron.schedule('0 0 * * *', checkPlanValidity);
+
+// Code For make query in Database
+
+// try {
+//   // Fetch all users who have a planValidity field that needs updating
+//   const users = await User.find({ planValidity: { $exists: true } });
+
+//   for (const user of users) {
+//     console.log(
+//       `Before Update - User ID: ${user._id}, planValidity: ${user.planValidity},  planValidity Type: ${typeof user.planValidity}`,
+//     );
+
+//     user.planValidity = new Date();
+//     await user.save(); // Save the updated user
+//     console.log(
+//       `After Update - User ID: ${user._id}, planValidity: ${user.planValidity},  planValidity Type: ${typeof user.planValidity}`,
+//     );
+//   }
+
+//   console.log(`Migration complete. Updated ${users.length} users.`);
+// } catch (error) {
+//   console.error('Error during migration:', error);
+// }

@@ -15,7 +15,7 @@ const userSchema: Schema = new Schema<TUser>(
     phone: { type: String, required: true },
     address: { type: String, required: true },
     plan: { type: String, enum: ['basic', 'premium'], default: 'basic' },
-    planValidity: { type: String, default: new Date() },
+    planValidity: { type: Date, default: new Date() },
     bio: { type: String, default: '' },
     profilePhoto: {
       type: String,
