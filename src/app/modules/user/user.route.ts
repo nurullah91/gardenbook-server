@@ -17,6 +17,12 @@ router.patch(
 
 router.get('/', checkAuth(USER_ROLE.admin), UserController.getAllUsers);
 
+router.get(
+  '/online/all-online-users',
+  checkAuth(USER_ROLE.admin),
+  UserController.getAllUsers,
+);
+
 router.delete(
   '/:userId',
   checkAuth(USER_ROLE.admin),

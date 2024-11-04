@@ -27,6 +27,7 @@ const userSchema: Schema = new Schema<TUser>(
       default:
         'https://res.cloudinary.com/dbwftcxvx/image/upload/v1727985302/image_9_k8zz66.jpg',
     },
+    isOnline: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
     totalUpvoteGained: { type: Number, default: 0 },

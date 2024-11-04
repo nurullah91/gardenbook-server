@@ -18,6 +18,7 @@ export type TJwtPayload = {
   profilePhoto?: string;
   coverPhoto?: string;
   status?: 'active' | 'blocked';
+  isOnline: boolean;
   passwordChangedAt?: Date;
 };
 

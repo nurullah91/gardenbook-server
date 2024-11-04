@@ -26,6 +26,17 @@ const getAllUsers = handleAsync(async (req, res) => {
   });
 });
 
+const getAllOnlineUsers = handleAsync(async (req, res) => {
+  const result = await UserService.getAllOnlineUsers(req.query);
+  responseSender(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'All Online users retrieved successfully',
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
 const getSingleUser = handleAsync(async (req, res) => {
   const { userId } = req.params;
   const result = await UserService.getSingleUserFromDB(userId);
@@ -171,5 +182,6 @@ export const UserController = {
   changePassword,
   forgetPassword,
   refreshToken,
+  getAllOnlineUsers,
   resetPassword,
 };

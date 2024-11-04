@@ -30,7 +30,7 @@ const createUserIntoDB = async (payload: TUser) => {
     name: newUser.name,
     email: newUser.email,
     role: newUser.role,
-
+    isOnline: newUser.isOnline,
     phone: newUser.phone,
     address: newUser.address,
     plan: newUser.plan,
@@ -58,6 +58,24 @@ const createUserIntoDB = async (payload: TUser) => {
 
 const getAllUsers = async (query: Record<string, unknown>) => {
   const allUsersQuery = new QueryBuilder(User.find({ isDeleted: false }), query)
+    .search(['name', 'email', 'role', 'phone', 'address', 'plan'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await allUsersQuery.countTotal();
+  const result = await allUsersQuery.modelQuery;
+  return {
+    meta,
+    result,
+  };
+};
+const getAllOnlineUsers = async (query: Record<string, unknown>) => {
+  const allUsersQuery = new QueryBuilder(
+    User.find({ isDeleted: false, isOnline: true }),
+    query,
+  )
     .search(['name', 'email', 'role', 'phone', 'address', 'plan'])
     .filter()
     .sort()
@@ -144,7 +162,7 @@ const loginUser = async (payload: TLoginUser) => {
     name: user.name,
     email: user.email,
     role: user.role,
-
+    isOnline: user.isOnline,
     phone: user.phone,
     address: user.address,
     plan: user.plan,
@@ -167,6 +185,10 @@ const loginUser = async (payload: TLoginUser) => {
     config.jwt_refresh_secret as string,
     config.jwt_refresh_expires_in as string,
   );
+
+  // Change user online status
+  user.isOnline = true;
+  await user.save();
 
   return {
     accessToken,
@@ -219,6 +241,7 @@ const refreshToken = async (token: string) => {
     bio: user.bio,
     passwordChangedAt: user.passwordChangedAt,
     status: user.status,
+    isOnline: user.isOnline,
   };
 
   const accessToken = createToken(
@@ -296,7 +319,7 @@ const forgetPassword = async (email: string) => {
       name: user.name,
       email: user.email,
       role: user.role,
-
+      isOnline: user.isOnline,
       phone: user.phone,
       address: user.address,
       plan: user.plan,
@@ -463,4 +486,5 @@ export const UserService = {
   changePassword,
   forgetPassword,
   resetPassword,
+  getAllOnlineUsers,
 };

@@ -15,7 +15,7 @@ The platform aims to foster a vibrant community where users can post gardening a
 1. **Full-stack web application** using Next.js, Typescript, MongoDB, Express,, Node.js.
 2. **JWT-based user authentication**, ensuring secure login, registration, and profile management.
 3. **Responsive user interface** that works across devices—mobile, and desktop.
-4. **Social features**, including upvoting posts, commenting, following other users, and displaying the most popular content.
+4. **Social features**, including upvoting posts, commenting, following other users, and displaying the most popular content. online and offline user's facility.
 5. **Rich text editor** to allow users to create, edit, and share gardening tips and guides, supporting multimedia content (images, videos, etc.).
 6. **Payment Integration**: Integrate payment gateways like **AAMARPAY or Stripe** to access premium gardening contents.
 7. **Advanced Search and Filter:** Implement search and filtering features that allow users to find relevant gardening content based on category, popularity, and other parameters.
@@ -45,7 +45,8 @@ The platform aims to foster a vibrant community where users can post gardening a
 >
 > - GET: api/users
 > - GET: api/users/:userId
-> - GET: api/users/active-users
+> - GET: api/users/active/get-all-users
+> - GET: api/users/online/all-online-users
 > - PATCH: api/users/update-user/:userId
 > - PATCH: api/users/update-profile/:userId
 > - PATCH: api/users/update-cover/:userId
