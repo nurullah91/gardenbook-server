@@ -32,6 +32,8 @@ const userSchema: Schema = new Schema<TUser>(
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
     totalUpvoteGained: { type: Number, default: 0 },
     totalDownvoteGained: { type: Number, default: 0 },
+    totalFollowers: { type: Number, default: 0 },
+    totalFollowing: { type: Number, default: 0 },
     passwordChangedAt: { type: Date },
   },
   {

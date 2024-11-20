@@ -101,7 +101,6 @@ const updateCover = handleAsync(async (req, res) => {
 
 const loginUser = handleAsync(async (req, res) => {
   const result = await UserService.loginUser(req.body);
-
   responseSender(res, {
     success: true,
     statusCode: httpStatus.OK,

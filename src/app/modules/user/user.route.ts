@@ -15,13 +15,9 @@ router.patch(
   UserController.updateUser,
 );
 
-router.get('/', checkAuth(USER_ROLE.admin), UserController.getAllUsers);
+router.get('/', UserController.getAllUsers);
 
-router.get(
-  '/online/all-online-users',
-  checkAuth(USER_ROLE.admin),
-  UserController.getAllUsers,
-);
+router.get('/online/all-online-users', UserController.getAllOnlineUsers);
 
 router.delete(
   '/:userId',

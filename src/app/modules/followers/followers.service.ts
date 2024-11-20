@@ -2,6 +2,7 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { Followers } from './followers.model';
 import { Types } from 'mongoose';
+import { User } from '../user/user.model';
 
 const followUser = async (userId: string, userIdToFollow: string) => {
   const userObjectId = new Types.ObjectId(userId);
@@ -14,12 +15,18 @@ const followUser = async (userId: string, userIdToFollow: string) => {
     // If no follower document exists, create one
     await Followers.create({
       user: userObjectId,
-      following: [followUserObjectId],
       followers: [],
+      following: [followUserObjectId],
     });
+
+    // update totalFollowing in user model
+    await User.findByIdAndUpdate(userObjectId, { $inc: { totalFollowing: 1 } });
   } else if (!userFollowers.following.includes(followUserObjectId)) {
     userFollowers.following.push(followUserObjectId);
     await userFollowers.save();
+
+    // update totalFollowing in user model
+    await User.findByIdAndUpdate(userObjectId, { $inc: { totalFollowing: 1 } });
   } else {
     throw new AppError(httpStatus.CONFLICT, 'Already following this user');
   }
@@ -35,9 +42,19 @@ const followUser = async (userId: string, userIdToFollow: string) => {
       followers: [userObjectId],
       following: [],
     });
+
+    // update totalFollowers in user model
+    await User.findByIdAndUpdate(followUserObjectId, {
+      $inc: { totalFollowers: 1 },
+    });
   } else if (!followUserFollowers.followers.includes(userObjectId)) {
     followUserFollowers.followers.push(userObjectId);
     await followUserFollowers.save();
+
+    // update totalFollowers in user model
+    await User.findByIdAndUpdate(followUserObjectId, {
+      $inc: { totalFollowers: 1 },
+    });
   }
 };
 
@@ -55,6 +72,8 @@ const unfollowUser = async (userId: string, userIdToUnfollow: string) => {
     (id) => !id.equals(followUserObjectId),
   );
   await userFollowers.save();
+  // update totalFollowing in user model
+  await User.findByIdAndUpdate(userObjectId, { $inc: { totalFollowing: -1 } });
 
   const followUserFollowers = await Followers.findOne({
     user: followUserObjectId,
@@ -68,6 +87,10 @@ const unfollowUser = async (userId: string, userIdToUnfollow: string) => {
       (id) => !id.equals(userObjectId),
     );
     await followUserFollowers.save();
+    // update totalFollowers in user model
+    await User.findByIdAndUpdate(followUserObjectId, {
+      $inc: { totalFollowers: -1 },
+    });
   }
 };
 

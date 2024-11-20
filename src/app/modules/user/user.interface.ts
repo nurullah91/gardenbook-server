@@ -23,6 +23,8 @@ export type TUser = {
   isOnline: boolean;
   totalUpvoteGained: number;
   totalDownvoteGained: number;
+  totalFollowers: number;
+  totalFollowing: number;
   isDeleted: boolean;
   createdAt?: Date;
   updatedAt?: Date;

@@ -27,6 +27,7 @@ const checkPlanValidity = async () => {
 cron.schedule('0 0 * * *', checkPlanValidity);
 
 // Code For make query in Database
+// cron.schedule('* * * * *', checkPlanValidity);
 
 // try {
 //   // Fetch all users who have a planValidity field that needs updating
