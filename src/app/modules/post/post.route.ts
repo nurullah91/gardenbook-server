@@ -20,17 +20,9 @@ router.post(
 
 router.get('/', PostController.getAllPosts);
 
-router.get(
-  '/user/:userId',
-  checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  PostController.getUserPost,
-);
+router.get('/user/:userId', PostController.getUserPost);
 
-router.get(
-  '/get-monthly-posts',
-  checkAuth(USER_ROLE.admin),
-  PostController.getPostsByMonth,
-);
+router.get('/get-monthly-posts', PostController.getPostsByMonth);
 
 router.get('/:postId', PostController.getSinglePost);
 router.get('/photos/latest-photos', PostController.getLatestPhotos);

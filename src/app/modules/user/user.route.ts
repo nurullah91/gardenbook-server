@@ -25,17 +25,9 @@ router.delete(
   UserController.deleteUser,
 );
 
-router.get(
-  '/:userId',
-  checkAuth(USER_ROLE.user, USER_ROLE.admin),
-  UserController.getSingleUser,
-);
+router.get('/:userId', UserController.getSingleUser);
 
-router.get(
-  '/active/get-all-users',
-  checkAuth(USER_ROLE.admin),
-  UserController.getActiveUsers,
-);
+router.get('/active/get-all-users', UserController.getActiveUsers);
 
 router.patch(
   '/update-profile/:userId',
